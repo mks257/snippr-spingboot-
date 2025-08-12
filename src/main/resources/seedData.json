@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "lang": "python",
+    "code": "print('Hello, World!')"
+  },
+  {
+    "id": 2,
+    "lang": "javascript",
+    "code": "console.log('Hello, World!');"
+  },
+  {
+    "id": 3,
+    "lang": "java",
+    "code": "System.out.println(\"Hello, World!\");"
+  }
+]
