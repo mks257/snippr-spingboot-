@@ -34,4 +34,8 @@ public class UserService {
         public SanitizedUser(Long id, String email, java.time.Instant createdAt) { this.id=id; this.email=email; this.createdAt=createdAt; }
         public Long getId() { return id; } public String getEmail() { return email; } public java.time.Instant getCreatedAt() { return createdAt; }
     }
+    public User findByEmail(String email) {
+    return repo.findByEmail(email).orElseThrow(() -> new UnauthorizedException("User not found"));
+    }
+
 }

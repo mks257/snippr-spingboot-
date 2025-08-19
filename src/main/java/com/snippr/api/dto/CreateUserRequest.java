@@ -8,7 +8,8 @@ public class CreateUserRequest {
     @Email @NotBlank
     private String email;
 
-    @NotBlank @Size(min = 8, message = "password must be at least 8 characters")
+    @NotBlank
+    @Size(min = 8, message = "password must be at least 8 characters")
     private String password;
 
     public String getEmail() { return email; }

@@ -1,0 +1,44 @@
+package com.snippr.api.controller;
+
+import com.snippr.api.security.JwtService;
+import com.snippr.api.user.UserService;
+import com.snippr.api.user.User;
+import com.snippr.api.user.UnauthorizedException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.nio.charset.StandardCharsets;
+import java.time.format.DateTimeFormatter;
+import java.util.Base64;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/auth")
+public class AuthController {
+    private final UserService users;
+    private final JwtService jwt;
+
+    public AuthController(UserService users, JwtService jwt) {
+        this.users = users;
+        this.jwt = jwt;
+    }
+
+    // POST /auth/login with Authorization: Basic base64(email:password)
+    @PostMapping("/login")
+    public ResponseEntity<Map<String,Object>> login(@RequestHeader(value="Authorization", required=false) String auth) {
+        if (auth == null || !auth.startsWith("Basic ")) throw new UnauthorizedException("Missing Basic auth header");
+        String decoded = new String(Base64.getDecoder().decode(auth.substring(6)), StandardCharsets.UTF_8);
+        int idx = decoded.indexOf(':');
+        if (idx <= 0) throw new UnauthorizedException("Malformed Basic credentials");
+        String email = decoded.substring(0, idx);
+        String password = decoded.substring(idx + 1);
+
+        User u = users.authenticate(email, password);
+        var token = jwt.issueFor(u.getEmail());
+        return ResponseEntity.ok(Map.of(
+                "tokenType", "Bearer",
+                "token", token.value(),
+                "expiresAt", DateTimeFormatter.ISO_INSTANT.format(token.expiresAt())
+        ));
+    }
+}
